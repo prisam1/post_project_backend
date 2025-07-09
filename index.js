@@ -10,7 +10,6 @@ const projectRoutes = require("./src/routes/projects.js");
 dotenv.config();
 const app = express();
 
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(
   cors({
     origin: ["https://devsconnect.netlify.app/", "http://localhost:3000"],
