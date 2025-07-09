@@ -11,8 +11,21 @@ dotenv.config();
 const app = express();
 
 app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+app.use(
+  cors({
+    origin: ["https://devsconnect.netlify.app/", "http://localhost:3000"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // Allowed HTTP methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow Authorization header
+  })
+);
+
 app.use(express.json());
 app.use(cookieParser());
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+  next();
+});
 
 mongoose
   .connect(process.env.MONGO_URI)
