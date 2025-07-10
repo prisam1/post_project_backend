@@ -25,17 +25,23 @@ exports.getProjectById = async (req, res) => {
   res.json({ project, comments });
 };
 
-exports.searchProject = async (req, res) => {
-  const { q } = req.query;
-  if (!q) return res.status(400).json({ message: "Query is required" });
-  const regex = new RegExp(q.toString(), "i");
-  const users = await User.find({ username: regex }).select("_id username bio");
-  const projects = await Project.find({
-    $or: [{ title: regex }, { description: regex }],
-  })
-    .populate("creator", "username")
-    .select("_id title description creator");
-  res.json({ users, projects });
+exports.searchUsersAndProjects = async (req, res) => {
+  try {
+    const query = req.query.q;
+
+    const projects = await Project.find({
+      title: { $regex: query, $options: "i" },
+    }).populate("creator", "username");
+
+    const users = await User.find({
+      username: { $regex: query, $options: "i" },
+    }).select("-password");
+
+    res.json({ projects, users });
+  } catch (err) {
+    
+    res.status(500).json({ message: "Search failed", error: err.message });
+  }
 };
 
 exports.postComments = async (req, res) => {
@@ -44,8 +50,6 @@ exports.postComments = async (req, res) => {
     userId: req.user.id,
     comments: req.body.message,
   });
-  await comment.save();
-  console.log("->", req.body.message);
-
+  await comment.save(); 
   res.status(201).json(comment);
 };
