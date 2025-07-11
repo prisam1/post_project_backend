@@ -1,6 +1,6 @@
 const Project = require("../models/Project.js");
 const Comment = require("../models/Comment.js");
-const User = require("../models/Comment.js");
+const User = require("../models/User.js");
 
 exports.addProject = async (req, res) => {
   const project = new Project({ ...req.body, creator: req.user.id });
@@ -37,12 +37,21 @@ exports.searchUsersAndProjects = async (req, res) => {
       username: { $regex: query, $options: "i" },
     }).select("-password");
 
-    res.json({ projects, users });
+    res.status(200).json({ projects, users });
   } catch (err) {
-    
     res.status(500).json({ message: "Search failed", error: err.message });
   }
 };
+
+exports.getProjectsByUserId = async (req, res) => {
+  try {
+    const projects = await Project.find({ creator: req.params.userId }).populate("creator", "username email");
+    res.status(200).json(projects);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching projects by user" });
+  }
+};
+
 
 exports.postComments = async (req, res) => {
   const comment = new Comment({
@@ -50,6 +59,6 @@ exports.postComments = async (req, res) => {
     userId: req.user.id,
     comments: req.body.message,
   });
-  await comment.save(); 
+  await comment.save();
   res.status(201).json(comment);
 };
