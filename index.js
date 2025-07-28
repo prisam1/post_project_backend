@@ -12,7 +12,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["https://devsconnect.netlify.app", "http://localhost:3000"],
+    origin: ["https://devsconnect.netlify.app", "http://localhost:3001"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // Allowed HTTP methods
     allowedHeaders: ["Content-Type", "Authorization"], // Allow Authorization header
@@ -20,7 +20,7 @@ app.use(
 );
 
 app.use(express.json());
-app.use(cookieParser()); 
+app.use(cookieParser());
 
 mongoose
   .connect(process.env.MONGO_URI)
