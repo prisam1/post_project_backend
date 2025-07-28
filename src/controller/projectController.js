@@ -45,13 +45,14 @@ exports.searchUsersAndProjects = async (req, res) => {
 
 exports.getProjectsByUserId = async (req, res) => {
   try {
-    const projects = await Project.find({ creator: req.params.userId }).populate("creator", "username email");
+    const projects = await Project.find({
+      creator: req.params.userId,
+    }).populate("creator", "username email");
     res.status(200).json(projects);
   } catch (err) {
     res.status(500).json({ message: "Error fetching projects by user" });
   }
 };
-
 
 exports.postComments = async (req, res) => {
   const comment = new Comment({
